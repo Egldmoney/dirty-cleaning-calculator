@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dirty Cleaning – Prijs Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111827" />
+  <link rel="manifest" href="manifest.json" />
+  <!-- iOS support (optional but nice) -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <style>
+    :root {
+      --primary: #111827;
+      --accent: #22c55e;
+      --bg: #f3f4f6;
+      --card: #ffffff;
+    }
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--primary);
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      margin-bottom: 1.5rem;
+    }
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+    h1 {
+      font-size: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    .badge {
+      background: #e5e7eb;
+      padding: .2rem .6rem;
+      border-radius: 999px;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+    }
+    @media (max-width: 640px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    label {
+      font-size: .85rem;
+      display: block;
+      margin-bottom: .2rem;
+    }
+    input[type="number"], input[type="text"], select, textarea {
+      width: 100%;
+      padding: .5rem .6rem;
+      border-radius: .5rem;
+      border: 1px solid #d1d5db;
+      font-size: .9rem;
+    }
+    input[type="number"] {
+      max-width: 100%;
+    }
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .select-row {
+      display: flex;
+      gap: .75rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: .5rem;
+    }
+    .pill-select {
+      display: inline-flex;
+      border-radius: 999px;
+      background: #e5e7eb;
+      padding: .15rem;
+    }
+    .pill-select button {
+      border: none;
+      background: transparent;
+      padding: .35rem .8rem;
+      border-radius: 999px;
+      font-size: .8rem;
+      cursor: pointer;
+    }
+    .pill-select button.active {
+      background: var(--accent);
+      color: white;
+    }
+    .totals-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 640px) {
+      .totals-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .totals-card {
+      border-radius: .75rem;
+      padding: 1rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+    .totals-card h3 {
+      margin-top: 0;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .totals-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: .9rem;
+      margin: .15rem 0;
+    }
+    .totals-line strong {
+      font-weight: 600;
+    }
+    .total-amount {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-top: .35rem;
+      text-align: right;
+    }
+    .tag {
+      font-size: .7rem;
+      background: #e5e7eb;
+      padding: .1rem .4rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .hint {
+      font-size: .75rem;
+      color: #6b7280;
+      margin-top: .25rem;
+    }
+    .footer-note {
+      font-size: .75rem;
+      color: #6b7280;
+      text-align: center;
+      margin-top: .75rem;
+    }
+    .small {
+      font-size: .8rem;
+    }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      margin-top: .3rem;
+      font-size: .85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>
+        Dirty Cleaning – Prijs Calculator
+        <span class="badge">Vlaamse markt · Woning & Kantoren</span>
+      </h1>
+      <p class="small">
+        Richtprijzen afgestemd op de huidige markt in Vlaanderen (Mechelen en ruime regio). Vul de aantallen in en kies de dienst.
+      </p>
+    </div>
+
+    <!-- Woning inputs -->
+    <div class="card">
+      <h2>1. Woning – Move-In / Move-Out</h2>
+      <div class="grid">
+        <div>
+          <label for="keuken">Keuken</label>
+          <input type="number" id="keuken" min="0" value="1" />
+        </div>
+        <div>
+          <label for="woonkamer">Woonkamer</label>
+          <input type="number" id="woonkamer" min="0" value="1" />
+        </div>
+        <div>
+          <label for="slaapkamer">Slaapkamers</label>
+          <input type="number" id="slaapkamer" min="0" value="3" />
+        </div>
+        <div>
+          <label for="toilet">Toiletten</label>
+          <input type="number" id="toilet" min="0" value="3" />
+        </div>
+        <div>
+          <label for="badkamer">Badkamers</label>
+          <input type="number" id="badkamer" min="0" value="2" />
+        </div>
+        <div>
+          <label for="gang">Gangen</label>
+          <input type="number" id="gang" min="0" value="2" />
+        </div>
+        <div>
+          <label for="garage">Garage</label>
+          <input type="number" id="garage" min="0" value="1" />
+        </div>
+        <div>
+          <label for="berging">Berging</label>
+          <input type="number" id="berging" min="0" value="1" />
+        </div>
+        <div>
+          <label for="trap">Trappen</label>
+          <input type="number" id="trap" min="0" value="2" />
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <div class="select-row">
+          <div>
+            <label>Vuilheid (voor alle berekeningen)</label>
+            <div class="pill-select" id="dirtinessSelect">
+              <button type="button" data-value="light">Light</button>
+              <button type="button" data-value="normal" class="active">Normal</button>
+              <button type="button" data-value="dirty">Dirty</button>
+            </div>
+          </div>
+        </div>
+        <p class="hint">
+          Light = −10% • Normal = standaard prijs • Dirty = +25% (zware vervuiling / boost / depressie / oplevering).
+        </p>
+      </div>
+    </div>
+
+    <!-- Woning totals -->
+    <div class="card">
+      <h2>2. Woning – Prijsberekening</h2>
+      <div class="totals-grid">
+        <div class="totals-card">
+          <h3>
+            Move-In
+            <span class="tag">Intrek-schoonmaak</span>
+          </h3>
+          <div class="totals-line">
+            <span>Totaal excl. BTW</span>
+            <strong id="miExcl">€ 0,00</strong>
+          </div>
+          <div class="totals-line">
+            <span>BTW 21%</span>
+            <strong id="miVat">€ 0,00</strong>
+          </div>
+          <div class="total-amount" id="miIncl">€ 0,00</div>
+        </div>
+
+        <div class="totals-card">
+          <h3>
+            Move-Out
+            <span class="tag">Verhuis / Oplevering</span>
+          </h3>
+          <div class="totals-line">
+            <span>Totaal excl. BTW</span>
+            <strong id="moExcl">€ 0,00</strong>
+          </div>
+          <div class="totals-line">
+            <span>BTW 21%</span>
+            <strong id="moVat">€ 0,00</strong>
+          </div>
+          <div class="total-amount" id="moIncl">€ 0,00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Office & special services -->
+    <div class="card">
+      <h2>3. Kantoren & Speciale Diensten</h2>
+
+      <div class="grid">
+        <div>
+          <label for="serviceType">Dienstcategorie</label>
+          <select id="serviceType">
+            <option value="office">Office Cleaning (kantoren & praktijkruimtes)</option>
+            <option value="refresh">Refresh Cleaning (boost/depressie – frisse start)</option>
+            <option value="holiday">Holiday Cleaning (feestdagen & speciale momenten)</option>
+          </select>
+        </div>
+        <div id="serviceDescription" class="small">
+          Dagelijkse/wekelijkse kantoorreiniging – desks, vergaderzalen, keukenhoeken, sanitair & afvalbeheer, ramen binnen & vloeren.
+        </div>
+      </div>
+
+      <!-- Office inputs -->
+      <div id="officeInputs" style="margin-top:1rem;">
+        <div class="grid">
+          <div>
+            <label for="officeArea">Oppervlakte kantoor (m²)</label>
+            <input type="number" id="officeArea" min="0" value="120" />
+          </div>
+          <div>
+            <label for="officeFrequency">Frequentie per week</label>
+            <select id="officeFrequency">
+              <option value="1">1x per week</option>
+              <option value="2">2x per week</option>
+              <option value="3">3x per week</option>
+              <option value="5">5x per week</option>
+            </select>
+          </div>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="officeSanitary" checked />
+          <label for="officeSanitary">Inclusief sanitair, keukenhoeken & afvalbeheer</label>
+        </div>
+        <p class="hint">
+          Richtprijs op basis van m², frequentie, vuilheid en marktconform uurtarief in Vlaanderen. Definitieve prijs na plaatsbezoek.
+        </p>
+      </div>
+
+      <!-- Package inputs (Refresh / Holiday) -->
+      <div id="packageInputs" style="margin-top:1rem; display:none;">
+        <div class="grid">
+          <div>
+            <label for="packageSize">Grootte woning</label>
+            <select id="packageSize">
+              <option value="small">Klein / appartement</option>
+              <option value="medium" selected>Gemiddeld huis</option>
+              <option value="large">Groot huis / villa</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint" id="packageHint">
+          Richtprijzen per Refresh-pakket – inclusief opruim- & sorteersessies (met respect), dieptereiniging van belangrijkste ruimtes en ontgeuren.
+        </p>
+      </div>
+
+      <div class="totals-card" style="margin-top:1rem;">
+        <h3>
+          Dienstprijs
+          <span class="tag" id="serviceTag">Office Cleaning</span>
+        </h3>
+        <div class="totals-line">
+          <span>Totaal excl. BTW</span>
+          <strong id="svcExcl">€ 0,00</strong>
+        </div>
+        <div class="totals-line">
+          <span>BTW 21%</span>
+          <strong id="svcVat">€ 0,00</strong>
+        </div>
+        <div class="total-amount" id="svcIncl">€ 0,00</div>
+        <p class="hint" id="svcNote">
+          Voor Office Cleaning wordt de richtprijs berekend als maandbudget (≈4,33 weken) met frequentiestaffels en vuilheidsfactor.
+        </p>
+      </div>
+    </div>
+
+    <!-- Offer text – woning -->
+    <div class="card">
+      <h2>4. Offerte tekst – Woning (Move-In / Move-Out)</h2>
+      <div class="grid">
+        <div>
+          <label for="clientName">Klantnaam</label>
+          <input type="text" id="clientName" placeholder="Bv. Familie Janssens" />
+        </div>
+        <div>
+          <label for="clientAddress">Adres te reinigen</label>
+          <input type="text" id="clientAddress" placeholder="Straat + nr, gemeente" />
+        </div>
+      </div>
+      <div style="margin-top:.75rem;">
+        <label for="cleanType">Type schoonmaak (voor deze offerte)</label>
+        <select id="cleanType">
+          <option value="move-in">Move-In</option>
+          <option value="move-out">Move-Out</option>
+        </select>
+      </div>
+      <p class="hint">
+        De tekst hieronder kun je rechtstreeks kopiëren naar WhatsApp, e-mail, enz.
+      </p>
+      <textarea id="offerText" readonly></textarea>
+    </div>
+
+    <!-- Offer text – Kantoren & Speciale diensten -->
+    <div class="card">
+      <h2>5. Offerte tekst – Kantoren & Speciale diensten</h2>
+      <div class="grid">
+        <div>
+          <label for="bizName">Bedrijfsnaam / klant</label>
+          <input type="text" id="bizName" placeholder="Bv. Dokterspraktijk De Smet" />
+        </div>
+        <div>
+          <label for="bizAddress">Adres locatie</label>
+          <input type="text" id="bizAddress" placeholder="Straat + nr, gemeente" />
+        </div>
+      </div>
+      <p class="hint">
+        Deze tekst gebruikt de gekozen dienst (Office / Refresh / Holiday) en de berekende marktconforme prijs hierboven.
+      </p>
+      <textarea id="serviceOfferText" readonly></textarea>
+    </div>
+
+    <p class="footer-note">
+      Tip: open deze pagina op je smartphone en voeg ze toe aan je startscherm om ze als "app" te gebruiken.
+    </p>
+  </div>
+
+  <script>
+    // ---------- BASISRATES WONING (Vlaamse markt) ----------
+    const rates = {
+      keuken:   { moveIn: 80, moveOut: 105 },
+      woonkamer:{ moveIn: 65, moveOut: 85 },
+      slaapkamer:{ moveIn: 40, moveOut: 55 },
+      toilet:   { moveIn: 25, moveOut: 35 },
+      badkamer: { moveIn: 65, moveOut: 85 },
+      gang:     { moveIn: 18, moveOut: 25 },
+      garage:   { moveIn: 40, moveOut: 55 },
+      berging:  { moveIn: 30, moveOut: 42 },
+      trap:     { moveIn: 18, moveOut: 25 }
+    };
+
+    // ---------- OFFICE CLEANING RATES (Vlaanderen) ----------
+    const officeRatePerM2 = 2.20;
+    const officeSanitaryMultiplier = 1.14;
+    const officeFrequencyFactor = {
+      1: 1.00,
+      2: 0.92,
+      3: 0.88,
+      5: 0.84
+    };
+
+    // ---------- PACKAGES FOR SPECIAL SERVICES ----------
+    const packageRates = {
+      refresh: {
+        small: 290,
+        medium: 360,
+        large: 430
+      },
+      holiday: {
+        small: 250,
+        medium: 320,
+        large: 390
+      }
+    };
+
+    let dirtiness = "normal";
+
+    const inputs = [
+      "keuken","woonkamer","slaapkamer","toilet",
+      "badkamer","gang","garage","berging","trap"
+    ];
+
+    const miExclEl = document.getElementById("miExcl");
+    const miVatEl  = document.getElementById("miVat");
+    const miInclEl = document.getElementById("miIncl");
+    const moExclEl = document.getElementById("moExcl");
+    const moVatEl  = document.getElementById("moVat");
+    const moInclEl = document.getElementById("moIncl");
+
+    const dirtButtons = document.querySelectorAll("#dirtinessSelect button");
+    const clientNameEl = document.getElementById("clientName");
+    const clientAddressEl = document.getElementById("clientAddress");
+    const cleanTypeEl = document.getElementById("cleanType");
+    const offerTextEl = document.getElementById("offerText");
+
+    const serviceTypeEl = document.getElementById("serviceType");
+    const serviceDescriptionEl = document.getElementById("serviceDescription");
+    const officeInputsEl = document.getElementById("officeInputs");
+    const packageInputsEl = document.getElementById("packageInputs");
+    const packageHintEl = document.getElementById("packageHint");
+    const officeAreaEl = document.getElementById("officeArea");
+    const officeFrequencyEl = document.getElementById("officeFrequency");
+    const officeSanitaryEl = document.getElementById("officeSanitary");
+    const packageSizeEl = document.getElementById("packageSize");
+    const svcExclEl = document.getElementById("svcExcl");
+    const svcVatEl  = document.getElementById("svcVat");
+    const svcInclEl = document.getElementById("svcIncl");
+    const svcTagEl  = document.getElementById("serviceTag");
+    const svcNoteEl = document.getElementById("svcNote");
+
+    const bizNameEl = document.getElementById("bizName");
+    const bizAddressEl = document.getElementById("bizAddress");
+    const serviceOfferTextEl = document.getElementById("serviceOfferText");
+
+    let serviceSubtotal = 0;
+    let serviceVat = 0;
+    let serviceTotal = 0;
+
+    function getMultiplier() {
+      if (dirtiness === "dirty") return 1.25;
+      if (dirtiness === "light") return 0.9;
+      return 1.0;
+    }
+
+    function formatEuro(value) {
+      return "€ " + value.toFixed(2).replace(".", ",");
+    }
+
+    function calculateHome() {
+      let subtotalMI = 0;
+      let subtotalMO = 0;
+      const mult = getMultiplier();
+
+      inputs.forEach(id => {
+        const el = document.getElementById(id);
+        const count = parseInt(el.value || "0", 10) || 0;
+        subtotalMI += count * rates[id].moveIn * mult;
+        subtotalMO += count * rates[id].moveOut * mult;
+      });
+
+      const vatMI = subtotalMI * 0.21;
+      const vatMO = subtotalMO * 0.21;
+      const totalMI = subtotalMI + vatMI;
+      const totalMO = subtotalMO + vatMO;
+
+      miExclEl.textContent = formatEuro(subtotalMI);
+      miVatEl.textContent  = formatEuro(vatMI);
+      miInclEl.textContent = formatEuro(totalMI);
+
+      moExclEl.textContent = formatEuro(subtotalMO);
+      moVatEl.textContent  = formatEuro(vatMO);
+      moInclEl.textContent = formatEuro(totalMO);
+
+      updateOfferText(subtotalMI, vatMI, totalMI, subtotalMO, vatMO, totalMO);
+    }
+
+    function updateServiceUI() {
+      const type = serviceTypeEl.value;
+
+      if (type === "office") {
+        officeInputsEl.style.display = "";
+        packageInputsEl.style.display = "none";
+        serviceDescriptionEl.textContent =
+          "Dagelijkse/wekelijkse kantoorreiniging – desks, vergaderzalen, keukenhoeken, sanitair & afvalbeheer, ramen binnen & vloeren.";
+        svcTagEl.textContent = "Office Cleaning";
+        svcNoteEl.textContent =
+          "Richtprijs als maandbudget (≈4,33 weken) op basis van m², frequentie, vuilheid en marktconforme tarieven. Definitieve prijs na plaatsbezoek.";
+      } else if (type === "refresh") {
+        officeInputsEl.style.display = "none";
+        packageInputsEl.style.display = "";
+        serviceDescriptionEl.textContent =
+          "Refresh Cleaning: boost/depressie-schoonmaak, opruim- & sorteersessies, dieptereiniging kernruimtes, ontgeuren & ventileren.";
+        packageHintEl.textContent =
+          "Richtprijzen per Refresh-pakket – inclusief opruim- & sorteersessies (met respect), dieptereiniging van belangrijkste ruimtes en ontgeuren.";
+        svcTagEl.textContent = "Refresh Cleaning";
+        svcNoteEl.textContent =
+          "Ideaal als boost of depressie-schoonmaak: een nieuwe start. Prijs is per éénmalige sessie, aangepast volgens woninggrootte en vuilheid.";
+      } else if (type === "holiday") {
+        officeInputsEl.style.display = "none";
+        packageInputsEl.style.display = "";
+        serviceDescriptionEl.textContent =
+          "Holiday Cleaning: pre-holiday schoonmaak vóór feestdagen, focus op leefruimte, keuken en gastentoiletten, extra aandacht voor details.";
+        packageHintEl.textContent =
+          "Richtprijzen per Holiday-pakket – ideaal vóór Kerst, Pasen, Nieuwjaar en speciale momenten. Focus op leefruimte, keuken en gastentoiletten.";
+        svcTagEl.textContent = "Holiday Cleaning";
+        svcNoteEl.textContent =
+          "Perfect als jij druk bent met cadeaus, menu’s en familie – wij zorgen dat je huis al feestklaar blinkt vóór de eerste gast aanbelt.";
+      }
+
+      calculateService();
+    }
+
+    function calculateService() {
+      const type = serviceTypeEl.value;
+      const mult = getMultiplier();
+      let subtotal = 0;
+
+      if (type === "office") {
+        const area = parseFloat(officeAreaEl.value || "0") || 0;
+        const freq = parseInt(officeFrequencyEl.value || "1", 10) || 1;
+        const freqFactor = officeFrequencyFactor[freq] || 1.0;
+
+        let perVisit = area * officeRatePerM2 * freqFactor;
+        if (officeSanitaryEl.checked) {
+          perVisit *= officeSanitaryMultiplier;
+        }
+        perVisit *= mult;
+
+        const monthly = perVisit * freq * 4.33;
+        subtotal = monthly;
+      } else if (type === "refresh" || type === "holiday") {
+        const size = packageSizeEl.value;
+        const base = packageRates[type][size] || 0;
+        subtotal = base * mult;
+      }
+
+      const vat = subtotal * 0.21;
+      const total = subtotal + vat;
+
+      serviceSubtotal = subtotal;
+      serviceVat = vat;
+      serviceTotal = total;
+
+      svcExclEl.textContent = formatEuro(subtotal);
+      svcVatEl.textContent  = formatEuro(vat);
+      svcInclEl.textContent = formatEuro(total);
+
+      updateServiceOfferText();
+    }
+
+    function updateOfferText(subMI, vatMI, totMI, subMO, vatMO, totMO) {
+      const name = clientNameEl.value || "Beste klant";
+      const addr = clientAddressEl.value || "(adres)";
+      const dirtLabel =
+        dirtiness === "dirty" ? "Dirty (zware vervuiling)" :
+        dirtiness === "light" ? "Light (lichte vervuiling)" :
+        "Normal";
+
+      const miLine =
+        `Move-In cleaning: ${formatEuro(subMI)} excl. BTW, ` +
+        `${formatEuro(vatMI)} BTW (21%), totaal ${formatEuro(totMI)} incl. BTW.`;
+
+      const moLine =
+        `Move-Out cleaning: ${formatEuro(subMO)} excl. BTW, ` +
+        `${formatEuro(vatMO)} BTW (21%), totaal ${formatEuro(totMO)} incl. BTW.`;
+
+      const type = cleanTypeEl.value === "move-in" ? "Move-In cleaning" : "Move-Out cleaning";
+
+      const text =
+`${name},
+
+Zoals besproken, vind je hieronder onze prijsindicatie voor ${type} bij:
+
+Adres:
+${addr}
+
+Vuilheid: ${dirtLabel}
+
+${miLine}
+${moLine}
+
+Bovenstaande bedragen zijn richtprijzen op basis van de opgegeven ruimtes en vuilheidsgraad.
+Indien de staat van de woning bij aankomst sterk afwijkt, kan de prijs licht aangepast worden.
+
+Als je akkoord gaat, plannen wij de schoonmaak graag in.
+
+Vriendelijke groeten,
+Dirty Cleaning`;
+
+      offerTextEl.value = text;
+    }
+
+    function updateServiceOfferText() {
+      const name = bizNameEl.value || "Beste klant";
+      const addr = bizAddressEl.value || "(adres)";
+      const type = serviceTypeEl.value;
+      const multLabel =
+        dirtiness === "dirty" ? "Dirty (zware vervuiling)" :
+        dirtiness === "light" ? "Light (lichte vervuiling)" :
+        "Normal";
+
+      let serviceLabel = "";
+      let details = "";
+      let pricingLine = "";
+
+      if (type === "office") {
+        const area = parseFloat(officeAreaEl.value || "0") || 0;
+        const freq = parseInt(officeFrequencyEl.value || "1", 10) || 1;
+        const sanitaryText = officeSanitaryEl.checked
+          ? "Inclusief sanitair, keukenhoeken en afvalbeheer."
+          : "Zonder uitgebreid sanitair/keukenpakket (optioneel bij te nemen).";
+
+        serviceLabel = "Office Cleaning (kantoren en praktijkruimtes)";
+        details =
+`Oppervlakte: ca. ${area.toFixed(0)} m²
+Frequentie: ${freq}x per week
+${sanitaryText}
+
+Taken: desks & bureaus, vergaderzalen, keukenhoeken, sanitair, afvalbeheer, ramen binnen, stof en vloeren.`;
+
+        pricingLine =
+`Richtprijs maandbudget: ${formatEuro(serviceSubtotal)} excl. BTW,
+${formatEuro(serviceVat)} BTW (21%), totaal ${formatEuro(serviceTotal)} incl. BTW.`;
+      } else if (type === "refresh") {
+        const size = packageSizeEl.value;
+        const sizeLabel =
+          size === "small" ? "klein / appartement" :
+          size === "large" ? "groot huis / villa" :
+          "gemiddeld huis";
+
+        serviceLabel = "Refresh Cleaning – boost/depressie schoonmaak";
+        details =
+`Woninggrootte: ${sizeLabel}
+
+Inbegrepen: opruim- & sorteersessies (met respect), dieptereiniging van de belangrijkste ruimtes, ontgeuren en ventileren, discrete en empathische aanpak.`;
+
+        pricingLine =
+`Richtprijs per éénmalige Refresh-sessie: ${formatEuro(serviceSubtotal)} excl. BTW,
+${formatEuro(serviceVat)} BTW (21%), totaal ${formatEuro(serviceTotal)} incl. BTW.`;
+      } else if (type === "holiday") {
+        const size = packageSizeEl.value;
+        const sizeLabel =
+          size === "small" ? "klein / appartement" :
+          size === "large" ? "groot huis / villa" :
+          "gemiddeld huis";
+
+        serviceLabel = "Holiday Cleaning – feestdagen & speciale momenten";
+        details =
+`Woninggrootte: ${sizeLabel}
+
+Inbegrepen: pre-holiday schoonmaak vóór de feestdag, focus op leefruimte, keuken en gastentoiletten, extra aandacht voor details (ramen, tafels, vloeren, decor).`;
+
+        pricingLine =
+`Richtprijs per Holiday-schoonmaak: ${formatEuro(serviceSubtotal)} excl. BTW,
+${formatEuro(serviceVat)} BTW (21%), totaal ${formatEuro(serviceTotal)} incl. BTW.`;
+      }
+
+      const text =
+`${name},
+
+Zoals besproken, vind je hieronder onze prijsindicatie voor:
+
+${serviceLabel}
+
+Locatie:
+${addr}
+
+Vuilheid: ${multLabel}
+
+${details}
+
+${pricingLine}
+
+Het gaat om een richtprijs op basis van de huidige informatie en marktconforme tarieven in Vlaanderen.
+Na plaatsbezoek en definitieve afstemming kunnen we de offerte exact bevestigen.
+
+Als je akkoord gaat, plannen wij de schoonmaak graag in op een moment dat voor jullie past.
+
+Vriendelijke groeten,
+Dirty Cleaning`;
+
+      serviceOfferTextEl.value = text;
+    }
+
+    // Events
+    inputs.forEach(id => {
+      document.getElementById(id).addEventListener("input", calculateHome);
+    });
+
+    dirtButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        dirtButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        dirtiness = btn.dataset.value;
+        calculateHome();
+        calculateService();
+      });
+    });
+
+    [clientNameEl, clientAddressEl, cleanTypeEl].forEach(el => {
+      el.addEventListener("input", calculateHome);
+      el.addEventListener("change", calculateHome);
+    });
+
+    serviceTypeEl.addEventListener("change", updateServiceUI);
+    officeAreaEl.addEventListener("input", calculateService);
+    officeFrequencyEl.addEventListener("change", calculateService);
+    officeSanitaryEl.addEventListener("change", calculateService);
+    packageSizeEl.addEventListener("change", calculateService);
+
+    [bizNameEl, bizAddressEl].forEach(el => {
+      el.addEventListener("input", updateServiceOfferText);
+    });
+
+    // Initial calculations
+    calculateHome();
+    updateServiceUI();
+
+    // ---------- Service worker registration ----------
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .catch(err => console.error('Service worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
